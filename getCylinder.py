@@ -52,13 +52,17 @@ def NodalPoints(M,N,alpha,theta,r,n, h):
     z = np.linspace(0, h, n)
     p = np.zeros([])
     for l in range(n):
+        #t_ = (theta[1] - theta[0]) * l%2
         p_ = np.zeros((N,3))
         p_[:,2] = z[l]
         k = 1
         for i in range(1,M+1):
             t = theta[i]
+            t_ = np.pi/alpha[i] * l%2
             for j in range(0,alpha[i]):
-                p_[k,:] = [np.cos(t)*r[i],np.sin(t)*r[i],z[l]]
+                p_[k,:] = [np.cos(t+t_)*r[i]+np.random.uniform(0,0.0001),
+                           np.sin(t+t_)*r[i]+np.random.uniform(0,0.0001),
+                           z[l] + np.random.uniform(0,0.0001)]
                 t += 2*np.pi/alpha[i]
                 k += 1
         if l == 0:
