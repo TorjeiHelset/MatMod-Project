@@ -7,7 +7,7 @@ jsonstruct = jsondecode(jsonfile);
 
 paramobj = ReactionDiffusionInputParamsGliaCells(jsonstruct);
 
-G = cartGrid([50, 50]);
+G = cartGrid([100, 50]);
 G = computeGeometry(G);
 
 paramobj.G = G;
@@ -35,16 +35,18 @@ initcase = 1;
 switch initcase
   case 1
       cN = zeros(nc,1);
-      cN(25 + 25*50) = sum(vols)/4;
-      cN(26 + 25*50) = sum(vols)/4;
-      cN(25 + 24*50) = sum(vols)/4;
-      cN(26 + 24*50) = sum(vols)/4;
+      cN(70 + 25*100) = sum(vols)/4;
+      cN(76 + 25*100) = sum(vols)/4;
+      cN(75 + 24*100) = sum(vols)/4;
+      cN(76 + 24*100) = sum(vols)/4;
       cR = ones(nc, 1);
       cC = zeros(nc, 1);
       cT = zeros(nc , 1);
-      edges = [1:50, (1:48)*50 + 1, (2:49)*50, (1:50) + 50*49];
+      edges = [1:100, (1:48)*100 + 1,(1:48)*100 + 50, (1:48)*100 + 51, (2:49)*100, (1:100) + 100*49, ];
       %edges = [(0:48)*50 + 1, (1:49)*50];
+      hole = [(24:27)*100, (24:27)*(100)+1] + 50;
       cT(edges) = ones(length(edges), 1);
+      cT(hole) = zeros(length(hole),1);
       cR(edges) = zeros(length(edges),1);
       cN_inac = zeros(nc,1);
       cTb = zeros(nc,1);
@@ -114,6 +116,6 @@ for istate = 1 : numel(states)
     colorbar
     title('N_{inac} concentration')
     drawnow
-    pause(0.1);
+    pause(0.01);
     
 end

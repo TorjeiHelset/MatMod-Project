@@ -5,7 +5,7 @@ mrstModule add ad-core mrst-gui
 jsonfile = fileread('diffusionGliaCells.json');
 jsonstruct = jsondecode(jsonfile);
 
-paramobj = ReactionDiffusionInputParamsGliaCells(jsonstruct);
+paramobj = AdvectionReactionDiffusionInputParams(jsonstruct);
 
 G = cartGrid([50, 50]);
 G = computeGeometry(G);
@@ -14,7 +14,7 @@ paramobj.G = G;
 
 paramobj = paramobj.validateInputParams();
 
-model = ReactionDiffusionGliaCells(paramobj);
+model = AdvectionReactionDiffusion(paramobj);
 
 
 % setup schedule
@@ -45,7 +45,8 @@ switch initcase
       edges = [1:50, (1:48)*50 + 1, (2:49)*50, (1:50) + 50*49];
       %edges = [(0:48)*50 + 1, (1:49)*50];
       cT(edges) = ones(length(edges), 1);
-      cR(edges) = zeros(length(edges),1);
+      hole = [1 + 23*50, 1 + 24*50, 1+25*50, 1+26*50];
+      cT(hole) = zeros(4,1);
       cN_inac = zeros(nc,1);
       cTb = zeros(nc,1);
 end
@@ -63,8 +64,6 @@ nls = NonLinearSolver();
 nls.errorOnFailure = false;
 
 [~, states, report] = simulateScheduleAD(initstate, model, schedule, 'NonLinearSolver', nls);
-
-
 
 %%
 
@@ -114,6 +113,6 @@ for istate = 1 : numel(states)
     colorbar
     title('N_{inac} concentration')
     drawnow
-    pause(0.1);
+    pause(0.001);
     
 end

@@ -1,4 +1,4 @@
-classdef ReactionDiffusionGliaCells < BaseModel
+classdef AdvectionReactionDiffusion < BaseModel
 
     properties
         
@@ -20,7 +20,7 @@ classdef ReactionDiffusionGliaCells < BaseModel
     
     methods
         
-        function model = ReactionDiffusionGliaCells(paramobj)
+        function model = AdvectionReactionDiffusion(paramobj)
             
             model = model@BaseModel();
             
@@ -33,12 +33,12 @@ classdef ReactionDiffusionGliaCells < BaseModel
             
             model = dispatchParams(model, paramobj, fdnames);
 
-            model.N = DiffusionComponent(paramobj.N);
+            model.N = AdvectionDiffusionComponent(paramobj.N);
             model.R = DiffusionComponent(paramobj.R);
             model.C = DiffusionComponent(paramobj.C);
             model.T = DiffusionComponent(paramobj.T);
             model.Tb = DiffusionComponent(paramobj.Tb);
-            model.N_inac = DiffusionComponent(paramobj.N_inac);
+            model.N_inac = AdvectionDiffusionComponent(paramobj.N_inac);
             
         end
 
