@@ -1,4 +1,4 @@
-classdef AdvectionDiffusionComponent < BaseModel
+classdef AdvectionDiffusionComponentWall < BaseModel
 
     properties
         
@@ -9,7 +9,7 @@ classdef AdvectionDiffusionComponent < BaseModel
 
     methods
         
-        function model = AdvectionDiffusionComponent(paramobj)
+        function model = AdvectionDiffusionComponentWall(paramobj)
 
             model = model@BaseModel();
             
@@ -41,15 +41,15 @@ classdef AdvectionDiffusionComponent < BaseModel
             
             model = model.registerVarNames(varnames);
 
-            fn = @AdvectionDiffusionComponent.updateFlux;
+            fn = @AdvectionDiffusionComponentWall.updateFlux;
             inputnames = {'c'};
             model = model.registerPropFunction({'flux', fn, inputnames});
 
-            fn = @AdvectionDiffusionComponent.updateMassConservation;
+            fn = @AdvectionDiffusionComponentWall.updateMassConservation;
             inputnames = {'accum', 'flux', 'source'};
             model = model.registerPropFunction({'massCons', fn, inputnames});
             
-            fn = @AdvectionDiffusionComponent.updateMassAccum;
+            fn = @AdvectionDiffusionComponentWall.updateMassAccum;
             inputnames = {'c'};
             model = model.registerPropFunction({'accum', fn, inputnames});
 
@@ -97,7 +97,13 @@ classdef AdvectionDiffusionComponent < BaseModel
             %j_ad((tot)/2+1:tot) = 1/2.*v2.*(c.val(index1) + c.val(index1+1));
             scaled = 1;
             flux = - D.*T.*op.Grad(c) + scaled.*j_ad;% + [v1.*c, v2.*c];
-            
+            % Wall at floor((N-1)/2) +  N*0:floor((M)/2)-2 and at
+            % floor((N-1)/2), floor(M/2)+2:M
+            % This is only x-direction, needs to fix in y-direction also
+            wall = [N.*(0:floor(M/2)-3), N.*(floor(M/2)+1:M-1)] + floor((N-1)/2);
+            flux(wall) = zeros(length(wall),1);
+
+
             state.flux = flux;
             
         end
