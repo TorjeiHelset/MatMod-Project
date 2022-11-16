@@ -8,19 +8,8 @@ jsonstruct = jsondecode(jsonfile);
 
 paramobj = ReactionDiffusionInputParamsMainPart(jsonstruct);
 
-Lxy = 2*220e-9;
-Lz = 15e-9;
-kappa = 8e10-7;
 
-T = Lxy^2 / kappa;
-
-Avo =6.023e23;
-epsilon = 10e-9;
-rho = 10e15;
-N_init = 5000 / (Lxy^2 * epsilon * Avo);
-R_0 = rho / (epsilon * Avo);
-
-G = cartGrid([50,50,10], [1, 1, Lz/Lxy]);
+G = cartGrid([50,50,10]);
 
 G = computeGeometry(G);
 %figure, plotGrid(G), view(10, 45)
@@ -63,7 +52,9 @@ switch initcase
       cN(26 + 25*50) = sum(vols)/4;
       cN(25 + 24*50) = sum(vols)/4;
       cN(26 + 24*50) = sum(vols)/4;
-      cR = ones(nc, 1);
+      cR = zeros(nc,1);
+     
+      cR(50*50*9+1:50*50*10) = ones(50*50,1);
       cC = zeros(nc, 1);
 end
 
@@ -88,6 +79,7 @@ states = states(ind);
 
 figure(1); figure(2); figure(3);
 
+framerate = 5/numel(states);
 for istate = 1 : numel(states)
 
     state = states{istate};
@@ -111,6 +103,27 @@ for istate = 1 : numel(states)
     title('C concentration')
 
     drawnow
+    frame1 = getframe(1);
+    frame2 = getframe(2);
+    frame3 = getframe(3);
+
+    im1 = frame2im(frame1);
+    im2 = frame2im(frame2);
+    im3 = frame2im(frame3);
+
+    [imind1,cm1] = rgb2ind(im1,256);
+    [imind2,cm2] = rgb2ind(im2,256);
+    [imind3,cm3] = rgb2ind(im3,256);
+
+    if istate == 1
+         imwrite(imind1,cm1,'main3dN.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind2,cm2,'main3dR.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind3,cm3,'main3dC.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+    else
+         imwrite(imind1,cm1,'main3dN.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind2,cm2,'main3dR.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind3,cm3,'main3dC.gif','gif','DelayTime',framerate,'WriteMode','append');
+    end
     pause(0.01);
     
 end

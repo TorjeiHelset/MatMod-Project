@@ -1,12 +1,12 @@
-N = 4;
-M = 2;
+close all
 
-a = 1:N-1;
-c = transpose(ones(M,1));
-A = c'*a;
-d = 0:M-1;
-e = N.*d;
-A = A + e'*transpose(ones(N-1,1));
-A_ = transpose(A);
-index1 = reshape(A_,1,[]);
-index1
+mrstModule add ad-core mrst-gui 
+
+jsonfile = fileread('diffusionMainPartScaled.json');
+jsonstruct = jsondecode(jsonfile);
+
+
+paramobj = ReactionDiffusionInputParamsMainPart(jsonstruct);
+
+paramobj.k_1 = paramobj.k_1*(mol/meter)*(1/second);
+paramobj.k_1

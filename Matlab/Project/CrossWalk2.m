@@ -47,7 +47,7 @@ switch initcase
       hole = [(24:27)*100, (24:27)*(100)+1] + 50;
       cT(edges) = ones(length(edges), 1);
       cT(hole) = zeros(length(hole),1);
-      cR(edges) = zeros(length(edges),1);
+      %cR(edges) = zeros(length(edges),1);
       cN_inac = zeros(nc,1);
       cTb = zeros(nc,1);
 end
@@ -75,7 +75,7 @@ ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
 figure(1); figure(2); figure(3); figure(4); figure(5); figure(6);
-
+framerate = 5 / numel(states);
 for istate = 1 : numel(states)
 
     state = states{istate};
@@ -116,6 +116,42 @@ for istate = 1 : numel(states)
     colorbar
     title('N_{inac} concentration')
     drawnow
+    frame1 = getframe(1);
+    frame2 = getframe(2);
+    frame3 = getframe(3);
+    frame4 = getframe(4);
+    frame5 = getframe(5);
+    frame6 = getframe(6);
+
+    im1 = frame2im(frame1);
+    im2 = frame2im(frame2);
+    im3 = frame2im(frame3);
+    im4 = frame2im(frame4);
+    im5 = frame2im(frame5);
+    im6 = frame2im(frame6);
+
+    [imind1,cm1] = rgb2ind(im1,256);
+    [imind2,cm2] = rgb2ind(im2,256);
+    [imind3,cm3] = rgb2ind(im3,256);
+    [imind4,cm4] = rgb2ind(im4,256);
+    [imind5,cm5] = rgb2ind(im5,256);
+    [imind6,cm6] = rgb2ind(im6,256);
+
+    if istate == 1
+         imwrite(imind1,cm1,'CrossWalkN.gif','gif', 'DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind2,cm2,'CrossWalkR.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind3,cm3,'CrossWalkC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+         imwrite(imind4,cm4,'CrossWalkT.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind5,cm5,'CrossWalkTb.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind6,cm6,'CrossWalkN_inac.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+    else
+         imwrite(imind1,cm1,'CrossWalkN.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind2,cm2,'CrossWalkR.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind3,cm3,'CrossWalkC.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind4,cm4,'CrossWalkT.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind5,cm5,'CrossWalkTb.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind6,cm6,'CrossWalkN_inac.gif','gif','DelayTime',framerate,'WriteMode','append');
+    end
     pause(0.01);
     
 end

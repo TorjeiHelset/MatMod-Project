@@ -100,8 +100,10 @@ classdef AdvectionDiffusionComponentWall < BaseModel
             % Wall at floor((N-1)/2) +  N*0:floor((M)/2)-2 and at
             % floor((N-1)/2), floor(M/2)+2:M
             % This is only x-direction, needs to fix in y-direction also
-            wall = [N.*(0:floor(M/2)-3), N.*(floor(M/2)+1:M-1)] + floor((N-1)/2);
-            flux(wall) = zeros(length(wall),1);
+            %wall = [(N+10).*(0:(floor(M/2)-3)), (N).*((floor(M/2)+1):(M-1))] + floor((N-1)/2);
+            
+            %flux(wall) = zeros(length(wall),1);
+            %flux(1:tot) = zeros(tot,1);
 
 
             state.flux = flux;

@@ -70,6 +70,8 @@ classdef ReactionDiffusionMainPart < BaseModel
 
             R1 = k1.*vols.*cN.*cR;
             R_1 = k_1.*vols.*cC;
+            %R1 = k1.*cN.*cR;
+            %R_1 = k1.*cN.*cR;
 
             state.N.source = -R1 + R_1;
             state.R.source = -R1 + R_1;

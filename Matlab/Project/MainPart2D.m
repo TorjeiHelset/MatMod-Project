@@ -7,7 +7,9 @@ jsonstruct = jsondecode(jsonfile);
 
 paramobj = ReactionDiffusionInputParamsMainPart(jsonstruct);
 
-G = cartGrid([50, 50]);
+nx = 100;
+ny = 100;
+G = cartGrid([nx, ny]);
 G = computeGeometry(G);
 
 paramobj.G = G;
@@ -16,9 +18,8 @@ paramobj = paramobj.validateInputParams();
 
 model = ReactionDiffusionMainPart(paramobj);
 
-
 % setup schedule
-total = 100;
+total = 10;
 n  = 100;
 dt = total/n;
 step = struct('val', dt*ones(n, 1), 'control', ones(n, 1));
@@ -45,10 +46,10 @@ switch initcase
     cC = zeros(nc, 1);
   case 3
       cN = zeros(nc,1);
-      cN(25 + 25*50) = sum(vols)/4;
-      cN(26 + 25*50) = sum(vols)/4;
-      cN(25 + 24*50) = sum(vols)/4;
-      cN(26 + 24*50) = sum(vols)/4;
+      cN(nx/2 + ny*nx/2) = sum(vols)/4;
+      cN(nx/2+1+ny*nx/2) = sum(vols)/4;
+      cN(nx/2 + ny*(nx/2+1)) = sum(vols)/4;
+      cN(nx/2 +1+ ny*(nx/2+1)) = sum(vols)/4;
       cR = ones(nc, 1);
       cC = zeros(nc, 1);
 end
@@ -74,6 +75,8 @@ states = states(ind);
 
 figure(1); figure(2); figure(3);
 
+framerate = 5 / numel(states);
+
 for istate = 1 : numel(states)
 
     state = states{istate};
@@ -97,6 +100,28 @@ for istate = 1 : numel(states)
     title('C concentration')
 
     drawnow
+    frame1 = getframe(1);
+    frame2 = getframe(2);
+    frame3 = getframe(3);
+
+    im1 = frame2im(frame1);
+    im2 = frame2im(frame2);
+    im3 = frame2im(frame3);
+
+    [imind1,cm1] = rgb2ind(im1,256);
+    [imind2,cm2] = rgb2ind(im2,256);
+    [imind3,cm3] = rgb2ind(im3,256);
+
+    if istate == 1
+         imwrite(imind1,cm1,'main2dN.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind2,cm2,'main2dR.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+         imwrite(imind3,cm3,'main2dC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+    else
+         imwrite(imind1,cm1,'main2dN.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind2,cm2,'main2dR.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind3,cm3,'main2dC.gif','gif','DelayTime',framerate,'WriteMode','append');
+    end
+
     pause(0.01);
     
 end

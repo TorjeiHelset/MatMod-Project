@@ -45,7 +45,7 @@ switch initcase
       edges = [1:50, (1:48)*50 + 1, (2:49)*50, (1:50) + 50*49];
       %edges = [(0:48)*50 + 1, (1:49)*50];
       cT(edges) = ones(length(edges), 1);
-      cR(edges) = zeros(length(edges),1);
+      %cR(edges) = zeros(length(edges),1);
       cN_inac = zeros(nc,1);
       cTb = zeros(nc,1);
 end
@@ -73,7 +73,7 @@ ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
 figure(1); figure(2); figure(3); figure(4); figure(5); figure(6);
-
+framerate = 5 / numel(states);
 for istate = 1 : numel(states)
 
     state = states{istate};
@@ -114,6 +114,44 @@ for istate = 1 : numel(states)
     colorbar
     title('N_{inac} concentration')
     drawnow
+    frame1 = getframe(1);
+    frame2 = getframe(2);
+    frame3 = getframe(3);
+    frame4 = getframe(4);
+    frame5 = getframe(5);
+    frame6 = getframe(6);
+
+    im1 = frame2im(frame1);
+    im2 = frame2im(frame2);
+    im3 = frame2im(frame3);
+    im4 = frame2im(frame4);
+    im5 = frame2im(frame5);
+    im6 = frame2im(frame6);
+
+    [imind1,cm1] = rgb2ind(im1,256);
+    [imind2,cm2] = rgb2ind(im2,256);
+    [imind3,cm3] = rgb2ind(im3,256);
+    [imind4,cm4] = rgb2ind(im4,256);
+    [imind5,cm5] = rgb2ind(im5,256);
+    [imind6,cm6] = rgb2ind(im6,256);
+
+    if istate == 1
+         imwrite(imind1,cm1,'glia2dN.gif','gif', 'DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind2,cm2,'glia2dR.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind3,cm3,'glia2dC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+         imwrite(imind4,cm4,'glia2dT.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind5,cm5,'glia2dTb.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind6,cm6,'glia2dN_inac.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+    else
+         imwrite(imind1,cm1,'glia2dN.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind2,cm2,'glia2dR.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind3,cm3,'glia2dC.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind4,cm4,'glia2dT.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind5,cm5,'glia2dTb.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind6,cm6,'glia2dN_inac.gif','gif','DelayTime',framerate,'WriteMode','append');
+    end
+
+
     pause(0.1);
     
 end
