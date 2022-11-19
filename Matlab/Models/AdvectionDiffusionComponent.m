@@ -75,7 +75,7 @@ classdef AdvectionDiffusionComponent < BaseModel
             
 
             D  = model.D;
-            v1 = -0.5;
+            v1 = -3e-7;
             v2 = 0;
             op = model.operators;
             T  = op.T;

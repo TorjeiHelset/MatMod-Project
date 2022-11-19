@@ -9,7 +9,6 @@ classdef AdvectionReactionDiffusionInputParams < InputParams
         C % parameter for diffusion component model C
         T % Diffusion model for component T
         Tb % Diffusion model for result Tb
-        N_inac % Diffusion model for N_inac
         
         k1 % reaction rate of R + N -> C
         k_1 % reaction rate of C -> R + N
@@ -32,7 +31,6 @@ classdef AdvectionReactionDiffusionInputParams < InputParams
             paramobj.C = DiffusionComponentInputParams(pick('C'));
             paramobj.T = DiffusionComponentInputParams(pick('T'));
             paramobj.Tb = DiffusionComponentInputParams(pick('Tb'));
-            paramobj.N_inac = DiffusionComponentInputParams(pick('N_inac'));
 
             paramobj = paramobj.validateInputParams();
             
@@ -46,7 +44,6 @@ classdef AdvectionReactionDiffusionInputParams < InputParams
                 paramobj.C.G = paramobj.G;
                 paramobj.T.G = paramobj.G;
                 paramobj.Tb.G = paramobj.G;
-                paramobj.N_inac.G = paramobj.G;
             end
             
         end

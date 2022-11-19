@@ -7,7 +7,6 @@ classdef AdvectionReactionDiffusion < BaseModel
         C % Diffision model for result
         T % Diffusion model for component T
         Tb % Diffusion model for result Tb
-        N_inac % Diffusion model for N_inac
 
         k1 % reaction constant of N + R -> C
         k_1 % reaction constant of C -> N + R
@@ -38,7 +37,6 @@ classdef AdvectionReactionDiffusion < BaseModel
             model.C = DiffusionComponent(paramobj.C);
             model.T = DiffusionComponent(paramobj.T);
             model.Tb = DiffusionComponent(paramobj.Tb);
-            model.N_inac = AdvectionDiffusionComponent(paramobj.N_inac);
             
         end
 
@@ -57,15 +55,13 @@ classdef AdvectionReactionDiffusion < BaseModel
                           {'R', 'c'}, ...
                           {'C', 'c'}, ...
                           {'T', 'c'}, ...
-                          {'Tb', 'c'}, ...
-                          {'N_inac', 'c'}};
+                          {'Tb', 'c'}};
 
             model = model.registerPropFunction({{'N', 'source'} , fn, inputnames});
             model = model.registerPropFunction({{'R', 'source'} , fn, inputnames});
             model = model.registerPropFunction({{'C', 'source'} , fn, inputnames});
             model = model.registerPropFunction({{'T', 'source'} , fn, inputnames});
             model = model.registerPropFunction({{'Tb', 'source'} , fn, inputnames});
-            model = model.registerPropFunction({{'N_inac', 'source'} , fn, inputnames});
             
         end
 
@@ -105,7 +101,6 @@ classdef AdvectionReactionDiffusion < BaseModel
             state.C.source = R1 - R_1;
             state.T.source = -R_t1 + R_t_1 + R_t2;
             state.Tb.source = R_t1 - R_t_1 - R_t2;
-            state.N_inac.source = R_t2;
             
         end
         
@@ -119,7 +114,6 @@ classdef AdvectionReactionDiffusion < BaseModel
             state.C = model.C.updateFlux(state.C);
             state.T = model.T.updateFlux(state.T);
             state.Tb = model.Tb.updateFlux(state.Tb);
-            state.N_inac = model.N_inac.updateFlux(state.N_inac);
 
             state = model.updateSourceTerm(state);
 
@@ -128,14 +122,12 @@ classdef AdvectionReactionDiffusion < BaseModel
             state.C = model.C.updateMassAccum(state.C, state0.C, dt);
             state.T = model.T.updateMassAccum(state.T, state0.T, dt);
             state.Tb = model.Tb.updateMassAccum(state.Tb, state0.Tb, dt);
-            state.N_inac = model.N_inac.updateMassAccum(state.N_inac, state0.N_inac, dt);
 
             state.N = model.N.updateMassConservation(state.N);
             state.R = model.R.updateMassConservation(state.R);
             state.C = model.C.updateMassConservation(state.C);
             state.T = model.T.updateMassConservation(state.T);
             state.Tb = model.Tb.updateMassConservation(state.Tb);
-            state.N_inac = model.N_inac.updateMassConservation(state.N_inac);
             
             eqs = {}; types = {}; names = {};
             
@@ -159,9 +151,6 @@ classdef AdvectionReactionDiffusion < BaseModel
             names{end + 1} = 'massCons Tb';
             types{end + 1} = 'cell';
 
-            eqs{end + 1}   = state.N_inac.massCons;
-            names{end + 1} = 'massCons N_inac';
-            types{end + 1} = 'cell';
                         
             primaryVars = model.getPrimaryVariables();
 
@@ -188,8 +177,7 @@ classdef AdvectionReactionDiffusion < BaseModel
                                {'R', 'c'}, ...
                                {'C', 'c'}, ...
                                {'T', 'c'}, ...
-                               {'Tb', 'c'}, ...
-                               {'N_inac', 'c'}};
+                               {'Tb', 'c'}};
             
         end
         

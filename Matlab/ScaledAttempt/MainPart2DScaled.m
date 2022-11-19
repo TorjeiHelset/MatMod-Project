@@ -2,38 +2,23 @@ close all
 
 mrstModule add ad-core mrst-gui 
 
-jsonfile = fileread('diffusionMainPartScaled.json');
-jsonstruct = jsondecode(jsonfile);
+Avo = 6.02214e23; % Avogadro constant
 
-paramobj = ReactionDiffusionInputParamsMainPart(jsonstruct);
-Lxy = 2*220e-9;
-Lz = 15e-9;
+paramobj = ReactionDiffusionInputParamsMainPart([]);
+paramobj.k1 = 4e6*(mol/litre)*(1/second);
+paramobj.k_1 = 5*(1/second);
+paramobj.N.D = 8e-7*(meter^2/second);
+paramobj.R.D = 0*(meter^2/second);
+paramobj.C.D = 0*(meter^2/second);
 
-kappa = paramobj.N.D;
-%paramobj.N.D = kappa * (1/Lxy); %Is this necessary?
-
-T = (Lxy^2) / kappa;
-Avo = 6.023e23;
-% To get concentration per litre we imagine the 2d grid has a height
-% epsilon, we let all neurotransmitters reach this level
-
-epsilon = 10e-9;
-rho = 10e15;
-N0 = 5000/Avo; % Number of moles released in one excitation
-R0 = rho * Lxy^2 / Avo; % Number of moles of receptors
-% Assuming R0 solved in layer of height epsilon and N0 solved in all of
-% the synaptic cleft
-nxy = 50;
-dxy = Lxy/nxy;
-
-N_max = N0 / (dxy^2); % Concentration if N0 placed in one cell
-N_unif = N_max / (nxy^2); % Concentration if N0 uniformly distributed
-R_max = R0 / (dxy^2);
-R_unif = R_max / (nxy^2); % Concentration if if R0 uniformely distributed
-
-
-G = cartGrid([nxy, nxy],[Lxy, Lxy]);
+Lxy = 2*0.22*micro*meter;
+Lz = 0.15*micro*meter;
+nx = 100; % Grid points in x and y direction
+ny = 100;
+nxy = 100;
+G = cartGrid([nx,ny],[Lxy, Lxy]);
 G = computeGeometry(G);
+
 
 paramobj.G = G;
 
@@ -41,12 +26,12 @@ paramobj = paramobj.validateInputParams();
 
 model = ReactionDiffusionMainPart(paramobj);
 
-
 % setup schedule
-total = 5e-8;
+total = 10*nano*second;
 n  = 100;
 dt = total/n;
 step = struct('val', dt*ones(n, 1), 'control', ones(n, 1));
+%step  = struct('val', dt*(1:n), 'control', ones(n, 1));
 
 control.none = [];
 schedule = struct('control', control, 'step', step);
@@ -54,15 +39,33 @@ schedule = struct('control', control, 'step', step);
 % setup initial state
 
 nc = G.cells.num;
+% For the dimensions to work out in 2d we need to imagine everything to
+% have a height epsilon. We set epsilon = 1nm;
+epsilon = 1*nano*meter; 
+G.cells.volumes = G.cells.volumes .* epsilon;
 vols = G.cells.volumes;
+rIndex = (1:nc)';
+nIndex = [nxy/2+nxy*(nxy/2), nxy/2+nxy*(nxy/2)+1,...
+          nxy/2+nxy*(1+nxy/2), nxy/2+nxy*(1+nxy/2)+1]';
 
-initcase = 4;
+
+epsilon = 1*nano*meter;
+vR = sum(vols(rIndex));
+vN = sum(vols(nIndex))*(Lz/epsilon);
+rTot = (1000 / (micro*meter)^2) * (Lxy^2)/Avo; % Total moles of receptors in system
+nTot = 5000 / Avo; % Total moles of transmitters in system
+r_start = rTot / vR; % Start concentration of receptos
+n_start = nTot / vN; % Start concentration of neurotransmitters 
+
+
+
+initcase = 1;
 switch initcase
   case 1
     cN      = zeros(nc, 1);
-    cN(1)   = sum(vols);
+    cN(nIndex)   = n_start;
     cR      = zeros(nc, 1);
-    cR(end) = sum(vols);
+    cR(rIndex) = r_start;
     cC = zeros(nc, 1);
   case 2
     cN = ones(nc, 1);
@@ -70,20 +73,12 @@ switch initcase
     cC = zeros(nc, 1);
   case 3
       cN = zeros(nc,1);
-      cN(25 + 25*50) = sum(vols)/4;
-      cN(26 + 25*50) = sum(vols)/4;
-      cN(25 + 24*50) = sum(vols)/4;
-      cN(26 + 24*50) = sum(vols)/4;
+      cN(nx/2 + ny*nx/2) = sum(vols)/4;
+      cN(nx/2+1+ny*nx/2) = sum(vols)/4;
+      cN(nx/2 + ny*(nx/2+1)) = sum(vols)/4;
+      cN(nx/2 +1+ ny*(nx/2+1)) = sum(vols)/4;
       cR = ones(nc, 1);
       cC = zeros(nc, 1);
-    case 4
-        middle = floor(nxy/2);
-        initN = [middle + middle*nxy, middle+1+middle*nxy,...
-                 middle+(middle+1)*nxy, middle+1+(middle+1)*nxy];
-        cN = zeros(nc,1);
-        cN(initN) = N_max/length(initN) .* ones(length(initN),1);
-        cR = R_unif .* ones(nc,1);
-        cC = zeros(nc,1);
 end
 
 initstate.N.c = cN;
@@ -106,6 +101,8 @@ ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
 figure(1); figure(2); figure(3);
+
+framerate = 5 / numel(states);
 
 for istate = 1 : numel(states)
 
@@ -130,6 +127,28 @@ for istate = 1 : numel(states)
     title('C concentration')
 
     drawnow
+    frame1 = getframe(1);
+    frame2 = getframe(2);
+    frame3 = getframe(3);
+
+    im1 = frame2im(frame1);
+    im2 = frame2im(frame2);
+    im3 = frame2im(frame3);
+
+    [imind1,cm1] = rgb2ind(im1,256);
+    [imind2,cm2] = rgb2ind(im2,256);
+    [imind3,cm3] = rgb2ind(im3,256);
+
+    if istate == 1
+         imwrite(imind1,cm1,'Scaledmain2dN.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind2,cm2,'Scaledmain2dR.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+         imwrite(imind3,cm3,'Scaledmain2dC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
+    else
+         imwrite(imind1,cm1,'Scaledmain2dN.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind2,cm2,'Scaledmain2dR.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind3,cm3,'Scaledmain2dC.gif','gif','DelayTime',framerate,'WriteMode','append');
+    end
+
     pause(0.01);
     
 end

@@ -19,10 +19,11 @@ paramobj = paramobj.validateInputParams();
 model = ReactionDiffusionMainPart(paramobj);
 
 % setup schedule
-total = 10;
+total = 1;
 n  = 100;
 dt = total/n;
-step = struct('val', dt*ones(n, 1), 'control', ones(n, 1));
+%step = struct('val', dt*ones(n, 1), 'control', ones(n, 1));
+step  = struct('val', dt*(1:n), 'control', ones(n, 1));
 
 control.none = [];
 schedule = struct('control', control, 'step', step);
