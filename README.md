@@ -22,7 +22,7 @@ The transporters are fixed at the glia cells.
 The simulator setup is based on BattMo developed at SINTEF which provides generic tools for simulation electro
 chemical system.
 
-
+Results can be found in ScaledGifs folder.
 
 <a id="org70fca4a"></a>
 
