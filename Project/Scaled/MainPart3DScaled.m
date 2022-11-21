@@ -94,6 +94,37 @@ nls.errorOnFailure = false;
 ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
+% Testing new plotting of grid
+a = nxy/2+1:nxy;
+b = 0:nxy/2-1;
+c = 0:nz-1;
+
+indices = [];
+for i = c
+    for j = b
+        for k = a
+            indices = [indices, k + 50*j + 50^2*i];
+        end
+    end
+end
+indices = setdiff(1:nc, indices);
+
+a_1 = 1;
+b_1 = 0:nxy;
+c_1 = 0:nz-1;
+edge1 = [1];
+for i = c_1
+    for j = b_1
+        edge1 = [edge1, 1 + 50*j + 50^2*i];
+    end
+end
+
+edgeIndices = [edge1, (nz-1)*nxy^2+1:nz*nxy^2];
+
+RCIndices = intersect(1:nc, edgeIndices);
+
+
+
 figure(1); figure(2); figure(3);
 
 framerate = 5 / numel(states);
@@ -104,19 +135,19 @@ for istate = 1 : numel(states)
 
     set(0, 'currentfigure', 1);
     cla
-    plotCellData(model.G, state.N.c);view(30,60);
+    plotCellData(model.G, state.N.c, indices);view(30,60);
     colorbar
     title('N concentration')
     
     set(0, 'currentfigure', 2);
     cla
-    plotCellData(model.G, state.R.c);view(30,60);
+    plotCellData(model.G, state.R.c, RCIndices);view(30,60);
     colorbar
     title('R concentration')
 
     set(0, 'currentfigure', 3);
     cla
-    plotCellData(model.G, state.C.c);view(30,60);
+    plotCellData(model.G, state.C.c, RCIndices);view(30,60);
     colorbar
     title('C concentration')
 
