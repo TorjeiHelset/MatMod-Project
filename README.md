@@ -31,5 +31,7 @@ chemical system.
 -   Install [BattMo](https://github.com/BattMoTeam/BattMo). Follow the [installation instruction](https://github.com/BattMoTeam/BattMo#installation) from the webpage
 -   Add the directories `Scaled`, 'Unscaled' and `Models` in your MATLAB path (or run `startup` script)
     
-    
+# Reduce runtime
+All files has a nx, ny (nz in 3D) specifying number of gridpoints in each direction. These can be reduced to reduce the runtime.
+All files also has a n, specifying the number of timesteps to be taken. This can also be reduced.
 
