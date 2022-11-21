@@ -10,12 +10,18 @@
 
 # Presentation
 
-We simulate a chemical system with three component and the a single chemical reaction  A + B -> C
+We simulate a signal travelling through a synaptic cleft. Neurotransmitters are released from a axon terminal and are bounded to 
+receptors at a dendrite spine, located at the other end of the synaptic cleft. We look at 3D and a geometrical reduction to 2D. 
+We introduce glia cells that contain transporters that react with neurotransmitters, to clear the synaptic cleft. We introduce the 
+possible of cross-talk, where neurotransmitters can diffuse from one synaptic cleft to a neighbouring one. Finally we include an 
+underlying flow in the fluid in the synaptic cleft.
 
-Each component is spatially resolved and can diffuse
+The neurotransmitters are spatially resolved and can diffuse. The receptors are fixed at the dendrite spine.
+The transporters are fixed at the glia cells.
 
 The simulator setup is based on BattMo developed at SINTEF which provides generic tools for simulation electro
 chemical system.
+
 
 
 <a id="org70fca4a"></a>
@@ -23,7 +29,7 @@ chemical system.
 # Installation
 
 -   Install [BattMo](https://github.com/BattMoTeam/BattMo). Follow the [installation instruction](https://github.com/BattMoTeam/BattMo#installation) from the webpage
--   Add the directories `Models` and `Examples` in your MATLAB path (or run `startup` script)
+-   Add the directories `Scaled`, 'Unscaled' and `Models` in your MATLAB path (or run `startup` script)
     
-    Then, you should be able to run the two scripts `runTest1D` and `runTest2D` from the `Examples` directory.
+    
 
