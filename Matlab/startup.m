@@ -1,3 +1,3 @@
 addpath(genpath('Models'))
-addpath(genpath('Examples'))
-addpath(genpath('Project'))
+addpath(genpath('Scaled'))
+addpath(genpath('Unscaled'))
