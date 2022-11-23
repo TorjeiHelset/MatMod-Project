@@ -3,7 +3,7 @@
 1.  [Presentation](#org81fa71d)
 2.  [Installation](#org70fca4a)
 3.  [Reduce Runtime](#org63fbd3e)
-
+3.  [Remarks](#org23er53e)
 
 <a id="org81fa71d"></a>
 
@@ -35,3 +35,6 @@ Results can be found in ScaledGifs folder.
 All files has a nx, ny (nz in 3D) specifying number of gridpoints in each direction. These can be reduced to reduce the runtime.
 All files also has a n, specifying the number of timesteps to be taken. This can also be reduced.
 
+<a id="org23er53e"></a>
+# Remarks
+It should be noted that although GitHub says that 99.9% of the code was written in Jupyter Notebook, the entirety of the new attempt is written in Matlab. This percentage is because some of the jupyter notebook files contain large animations.
