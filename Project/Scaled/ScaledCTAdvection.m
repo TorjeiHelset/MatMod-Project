@@ -96,7 +96,13 @@ nls.errorOnFailure = false;
 ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
-figure(1); figure(2); figure(3); figure(4); figure(5);
+indices = [];
+for i = 0:ny-1
+    indices = [indices, (1:nx/2) + nx*i];
+end
+origInd = setdiff(1:nc, indices);
+
+figure(1); figure(2); figure(3); figure(4); figure(5); figure(6); figure(7);
 framerate = 5 / numel(states);
 for istate = 1 : numel(states)
 
@@ -104,13 +110,13 @@ for istate = 1 : numel(states)
 
     set(0, 'currentfigure', 1);
     cla
-    plotCellData(model.G, state.N.c);
+    plotCellData(model.G, state.N.c, origInd);
     colorbar
     title('N concentration')
     
     set(0, 'currentfigure', 2);
     cla
-    plotCellData(model.G, state.R.c);
+    plotCellData(model.G, state.R.c, origInd);
     colorbar
     title('R concentration')
 
@@ -132,12 +138,27 @@ for istate = 1 : numel(states)
     colorbar
     title('Tb concentration')
 
+    set(0, 'currentfigure', 6);
+    cla
+    plotCellData(model.G, state.N.c, indices);
+    colorbar
+    title('N concentration neighbouring')
+
+    set(0, 'currentfigure', 7);
+    cla
+    plotCellData(model.G, state.R.c, indices);
+    colorbar
+    title('R concentration neighbouring')
     drawnow
+
     frame1 = getframe(1);
     frame2 = getframe(2);
     frame3 = getframe(3);
     frame4 = getframe(4);
     frame5 = getframe(5);
+    frame6 = getframe(6);
+    frame7 = getframe(7);
+
 
 
     im1 = frame2im(frame1);
@@ -145,12 +166,16 @@ for istate = 1 : numel(states)
     im3 = frame2im(frame3);
     im4 = frame2im(frame4);
     im5 = frame2im(frame5);
+    im6 = frame2im(frame6);
+    im7 = frame2im(frame7);
 
     [imind1,cm1] = rgb2ind(im1,256);
     [imind2,cm2] = rgb2ind(im2,256);
     [imind3,cm3] = rgb2ind(im3,256);
     [imind4,cm4] = rgb2ind(im4,256);
     [imind5,cm5] = rgb2ind(im5,256);
+    [imind6,cm6] = rgb2ind(im6,256);
+    [imind7,cm7] = rgb2ind(im7,256);
 
     if istate == 1
          imwrite(imind1,cm1,'ScaledCT_AdvectionN.gif','gif', 'DelayTime',framerate, 'Loopcount',inf);
@@ -158,12 +183,16 @@ for istate = 1 : numel(states)
          imwrite(imind3,cm3,'ScaledCT_AdvectionC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
          imwrite(imind4,cm4,'ScaledCT_AdvectionT.gif','gif','DelayTime',framerate, 'Loopcount',inf);
          imwrite(imind5,cm5,'ScaledCT_AdvectionTb.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind6,cm6,'ScaledCT_AdvectionN2.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind7,cm7,'ScaledCT_AdvectionR2.gif','gif','DelayTime',framerate, 'Loopcount',inf);
     else
          imwrite(imind1,cm1,'ScaledCT_AdvectionN.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind2,cm2,'ScaledCT_AdvectionR.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind3,cm3,'ScaledCT_AdvectionC.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind4,cm4,'ScaledCT_AdvectionT.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind5,cm5,'ScaledCT_AdvectionTb.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind6,cm6,'ScaledCT_AdvectionN2.gif','gif','DelayTime',framerate, 'WriteMode','append');
+         imwrite(imind7,cm7,'ScaledCT_AdvectionR2.gif','gif','DelayTime',framerate, 'WriteMode','append');
     end
     pause(0.01);
     

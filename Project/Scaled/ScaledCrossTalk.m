@@ -100,12 +100,18 @@ nls.errorOnFailure = false;
 
 
 %%
+% Testing new plotting of grid
 
+indices = [];
+for i = 0:ny-1
+    indices = [indices, (1:nx/2) + nx*i];
+end
+origInd = setdiff(1:nc, indices);
 % Remove empty states (could have been created if solver did not converge)
 ind = cellfun(@(state) ~isempty(state), states);
 states = states(ind);
 
-figure(1); figure(2); figure(3); figure(4); figure(5); figure(6);
+figure(1); figure(2); figure(3); figure(4); figure(5); figure(6); figure(7);
 framerate = 5 / numel(states);
 for istate = 1 : numel(states)
 
@@ -113,7 +119,7 @@ for istate = 1 : numel(states)
 
     set(0, 'currentfigure', 1);
     cla
-    plotCellData(model.G, state.N.c);
+    plotCellData(model.G, state.N.c, origInd);
     colorbar
     title('N concentration')
     
@@ -143,16 +149,24 @@ for istate = 1 : numel(states)
 
     set(0, 'currentfigure', 6);
     cla
-    plotCellData(model.G, state.N_inac.c);
+    plotCellData(model.G, state.N.c, indices);
     colorbar
-    title('N_{inac} concentration')
+    title('N concentration neighbouring')
+
+    set(0, 'currentfigure', 7);
+    cla
+    plotCellData(model.G, state.R.c, indices);
+    colorbar
+    title('R concentration neighbouring')
     drawnow
+
     frame1 = getframe(1);
     frame2 = getframe(2);
     frame3 = getframe(3);
     frame4 = getframe(4);
     frame5 = getframe(5);
     frame6 = getframe(6);
+    frame7 = getframe(7);
 
     im1 = frame2im(frame1);
     im2 = frame2im(frame2);
@@ -160,6 +174,8 @@ for istate = 1 : numel(states)
     im4 = frame2im(frame4);
     im5 = frame2im(frame5);
     im6 = frame2im(frame6);
+    im7 = frame2im(frame7);
+
 
     [imind1,cm1] = rgb2ind(im1,256);
     [imind2,cm2] = rgb2ind(im2,256);
@@ -167,6 +183,7 @@ for istate = 1 : numel(states)
     [imind4,cm4] = rgb2ind(im4,256);
     [imind5,cm5] = rgb2ind(im5,256);
     [imind6,cm6] = rgb2ind(im6,256);
+    [imind7,cm7] = rgb2ind(im7,256);
 
     if istate == 1
          imwrite(imind1,cm1,'ScaledCrossTalkN.gif','gif', 'DelayTime',framerate, 'Loopcount',inf);
@@ -174,14 +191,16 @@ for istate = 1 : numel(states)
          imwrite(imind3,cm3,'ScaledCrossTalkC.gif','gif', 'DelayTime',framerate,'Loopcount',inf);
          imwrite(imind4,cm4,'ScaledCrossTalkT.gif','gif','DelayTime',framerate, 'Loopcount',inf);
          imwrite(imind5,cm5,'ScaledCrossTalkTb.gif','gif','DelayTime',framerate, 'Loopcount',inf);
-         imwrite(imind6,cm6,'ScaledCrossTalkN_inac.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind6,cm6,'ScaledCrossTalkN2.gif','gif','DelayTime',framerate, 'Loopcount',inf);
+         imwrite(imind7,cm7,'ScaledCrossTalkR2.gif','gif','DelayTime',framerate, 'Loopcount',inf);
     else
          imwrite(imind1,cm1,'ScaledCrossTalkN.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind2,cm2,'ScaledCrossTalkR.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind3,cm3,'ScaledCrossTalkC.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind4,cm4,'ScaledCrossTalkT.gif','gif','DelayTime',framerate,'WriteMode','append');
          imwrite(imind5,cm5,'ScaledCrossTalkTb.gif','gif','DelayTime',framerate,'WriteMode','append');
-         imwrite(imind6,cm6,'ScaledCrossTalkN_inac.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind6,cm6,'ScaledCrossTalkN2.gif','gif','DelayTime',framerate,'WriteMode','append');
+         imwrite(imind7,cm7,'ScaledCrossTalkR2.gif','gif','DelayTime',framerate,'WriteMode','append');
     end
     pause(0.01);
     
